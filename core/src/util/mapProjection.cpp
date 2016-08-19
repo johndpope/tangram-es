@@ -87,13 +87,16 @@ BoundingBox MercatorProjection::TileBounds(const TileID _tileCoord) const {
     };
 }
 
-
 BoundingBox MercatorProjection::TileLonLatBounds(const TileID _tileCoord) const {
     BoundingBox tileBounds(TileBounds(_tileCoord));
     return {
         MetersToLonLat(tileBounds.min),
         MetersToLonLat(tileBounds.max)
     };
+}
+
+double MercatorProjection::TileResolution(int _zoom) const {
+    return m_Res / (1 << _zoom);
 }
 
 glm::dvec2 MercatorProjection::TileCenter(const TileID _tileCoord) const {

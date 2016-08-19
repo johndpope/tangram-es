@@ -140,6 +140,11 @@ public:
 
     virtual double TileSize() const = 0;
 
+    /*
+     * Returns the resolution of the tile size for a given zoom
+     */
+    virtual double TileResolution(int _zoom) const = 0;
+
     virtual ~MapProjection() {}
 };
 
@@ -172,6 +177,7 @@ public:
     virtual BoundingBox MapBounds() const override;
     virtual BoundingBox MapLonLatBounds() const override;
     virtual double TileSize() const override;
+    virtual double TileResolution(int _zoom) const override;
 
     virtual ~MercatorProjection() {}
 };
