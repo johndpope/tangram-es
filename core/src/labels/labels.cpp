@@ -35,6 +35,8 @@ void Labels::updateLabels(const View& _view, float _dt,
                           const std::vector<std::shared_ptr<Tile>>& _tiles,
                           bool _onlyTransitions) {
 
+    m_points.clear();
+
     // Keep labels for debugDraw
     if (!_onlyTransitions) { m_labels.clear(); }
 
@@ -71,7 +73,10 @@ void Labels::updateLabels(const View& _view, float _dt,
                     continue;
                 }
 
-                if (!label->update(mvp, screenSize, dz, drawAllLabels, m_screenTransform)) {
+                Range transformRange;
+                Label::ScreenTransform transform { m_points, transformRange, true };
+
+                if (!label->update(mvp, screenSize, dz, drawAllLabels, transform)) {
                     // skip dead labels
                     continue;
                 }
@@ -81,13 +86,14 @@ void Labels::updateLabels(const View& _view, float _dt,
 
                     if (label->visibleState() || !label->canOcclude()) {
                         m_needUpdate |= label->evalState(_dt);
-                        label->pushTransform(m_screenTransform);
+                        label->pushTransform(transform);
                     }
                 } else if (label->canOcclude()) {
                     m_labels.emplace_back(label.get(), tile.get(), proxyTile);
+                    m_labels.back().transform = transformRange;
                 } else {
                     m_needUpdate |= label->evalState(_dt);
-                    label->pushTransform(m_screenTransform);
+                    label->pushTransform(transform);
                 }
             }
         }
@@ -247,7 +253,10 @@ void Labels::handleOcclusions(const View& _view, float _dt) {
                 continue;
             }
         }
-        l->obbs(m_screenTransform, m_obbs, entry.obbs);
+
+        Label::ScreenTransform transform { m_points, entry.transform };
+
+        l->obbs(transform, m_obbs, entry.obbs);
 
         // Skip label if another label of this repeatGroup is
         // within repeatDistance.
@@ -261,7 +270,7 @@ void Labels::handleOcclusions(const View& _view, float _dt) {
         do {
             if (l->isOccluded()) {
                 // Update BBox for anchor fallback
-                l->obbs(m_screenTransform, m_obbs, entry.obbs, false);
+                l->obbs(transform, m_obbs, entry.obbs, false);
                 if (anchorIndex == l->anchorIndex()) {
                     // Reached first anchor again
                     break;
@@ -311,7 +320,7 @@ void Labels::handleOcclusions(const View& _view, float _dt) {
 
         // Update label meshes
         m_needUpdate |= l->evalState(_dt);
-        l->pushTransform(m_screenTransform);
+        l->pushTransform(transform);
 
     }
 }
