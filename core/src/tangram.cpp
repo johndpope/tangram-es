@@ -268,6 +268,7 @@ bool Map::update(float _dt) {
     impl->scene->updateTime(_dt);
 
     bool viewComplete = true;
+    bool markersNeedUpdate = false;
 
     for (auto& ease : impl->eases) {
         if (!ease.finished()) {
@@ -300,6 +301,7 @@ bool Map::update(float _dt) {
 
         for (const auto& marker : markers) {
             marker->update(_dt, impl->view);
+            markersNeedUpdate |= marker->isEasing();
         }
 
         if (impl->view.changedOnLastUpdate() ||
@@ -328,8 +330,8 @@ bool Map::update(float _dt) {
         viewComplete = false;
     }
 
-    // Request for render if labels are in fading in/out states
-    if (labelsNeedUpdate) { requestRender(); }
+    // Request render if labels are in fading states or markers are easing.
+    if (labelsNeedUpdate || markersNeedUpdate) { requestRender(); }
 
     return viewComplete;
 }
@@ -609,6 +611,10 @@ bool Map::markerRemove(Marker* _marker) {
 
 bool Map::markerSetPoint(Marker* _marker, LngLat _lngLat) {
     return impl->markerManager.setPoint(_marker, _lngLat);
+}
+
+bool Map::markerSetPointEased(Marker* _marker, LngLat _lngLat, float _duration, EaseType ease) {
+    return impl->markerManager.setPointEased(_marker, _lngLat, _duration, ease);
 }
 
 bool Map::markerSetPolyline(Marker* _marker, LngLat* _coordinates, int _count) {
