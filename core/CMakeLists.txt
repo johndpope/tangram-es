@@ -61,6 +61,7 @@ add_library(${CORE_LIBRARY} ${FOUND_SOURCES} ${FOUND_HEADERS})
 
 target_link_libraries(${CORE_LIBRARY}
   PUBLIC
+  minizip
   duktape
   css-color-parser-cpp
   geojson-vt-cpp

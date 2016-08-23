@@ -13,8 +13,14 @@ namespace Tangram {
 
 std::atomic_uint Importer::progressCounter(0);
 
-bool isUrl(const std::string &path) {
+bool isUrl(const std::string& path) {
     static const std::regex r("^(http|https):/");
+    std::smatch match;
+    return std::regex_search(path, match, r);
+}
+
+bool isZip(const std::string& path) {
+    static const std::regex r("\\.zip$");
     std::smatch match;
     return std::regex_search(path, match, r);
 }
@@ -73,6 +79,10 @@ Node Importer::applySceneImports(const std::string& scenePath, const std::string
                     progressCounter--;
                     m_condition.notify_all();
             });
+        } else if (isZip(path)) {
+            std::string extractedScenePath = extractAndGetScenePath(path);
+            std::unique_lock<std::mutex> lock(sceneMutex);
+            processScene(extractedScenePath, getSceneString(extractedScenePath));
         } else {
             std::unique_lock<std::mutex> lock(sceneMutex);
             processScene(path, getSceneString(path));

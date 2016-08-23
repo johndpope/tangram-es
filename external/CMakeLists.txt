@@ -56,6 +56,16 @@ target_compile_options(geojson-vt-cpp
   PUBLIC
   -Wno-unknown-pragmas)
 
+## minizip ##
+############
+add_library(minizip ${CMAKE_CURRENT_SOURCE_DIR}/minizip/unzip.c)
+
+#target_compile_options(minizip PRIVATE 
+    #${CMAKE_CURRENT_SOURCE_DIR}/minizip)
+
+target_include_directories(minizip
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/minizip)
 
 ## duktape ##
 #############
@@ -80,6 +90,7 @@ if(USE_EXTERNAL_LIBS)
     yaml-cpp
     css-color-parser-cpp
     geojson-vt-cpp
+    minizip
     duktape
     FILE ${EXPORTS_DIR}/core-dependencies.cmake)
 endif()

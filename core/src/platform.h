@@ -7,6 +7,8 @@
 #include <functional>
 #include <cstdio>
 
+#include "unzip.h"
+
 /* Print a formatted message to the console
  *
  * Uses printf syntax to write a string to stderr (or logcat, on Android)
@@ -26,6 +28,8 @@ void requestRender();
 void setContinuousRendering(bool _isContinuous);
 
 bool isContinuousRendering();
+
+std::string extractAndGetScenePath(const std::string& path);
 
 /* get system path of a font file */
 std::string systemFontPath(const std::string& _name, const std::string& _weight, const std::string& _face);

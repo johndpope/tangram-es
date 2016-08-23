@@ -135,6 +135,10 @@ void requestRender() {
     jniEnv->CallVoidMethod(tangramInstance, requestRenderMethodID);
 }
 
+std::string extractAndGetScenePath(const std::string& path) {
+    return "";
+}
+
 std::string systemFontFallbackPath(int _importance, int _weightHint) {
 
     JniThreadBinding jniEnv(jvm);
